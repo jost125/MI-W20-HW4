@@ -68,6 +68,13 @@ var Server = function(customerService) {
 						that._customerService.remove(customerId);
 						that._response(response, {message: 'Queued for deletion'}, 202);
 						break;
+					default:
+						var header = {
+							'Content-Type': 'application/json',
+							'Allow': 'GET, DELETE'
+						};
+						that._response(response, {message: 'Method not allowed'}, 405, header);
+						break;
 				}
 			} catch (e) {
 				that._response(response, {message: e}, 404);
@@ -77,8 +84,8 @@ var Server = function(customerService) {
 		}
 	});
 
-	this._response = function(response, data, code) {
-		response.writeHead(code, {"Content-Type": "application/json"});
+	this._response = function(response, data, code, header) {
+		response.writeHead(code, header ? header : {"Content-Type": "application/json"});
 		response.end(JSON.stringify({data: data}));
 	};
 
